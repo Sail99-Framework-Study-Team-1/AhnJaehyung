@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
 
@@ -38,7 +39,13 @@ public class BulletinBoard {
     @Column(nullable = true)
     private Date deletedAt;
 
+    public void hashPassword(PasswordEncoder encoder) {
+        this.password = encoder.encode(this.password);
+    }
 
+    public boolean matchPassword(String password, PasswordEncoder encoder) {
+        return encoder.matches(password, this.password);
+    }
 
     public static BulletinBoard fromRequestDTO(BulletinBoardRequestDTO dto) {
         BulletinBoard bulletinBoard = new BulletinBoard();

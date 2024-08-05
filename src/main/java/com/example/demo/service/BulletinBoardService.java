@@ -5,7 +5,6 @@ import com.example.demo.dto.BulletinBoardRequestDTO;
 import com.example.demo.repository.BulletinBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,7 @@ public class BulletinBoardService {
     @Autowired private PasswordEncoder passwordEncoder;
 
     public List<BulletinBoard> getAllBulletinBoard(){
-        return bulletinBoardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        return bulletinBoardRepository.findAllNotDeleted();
     }
 
     public BulletinBoard postBulletinBoard(
@@ -29,9 +28,7 @@ public class BulletinBoardService {
     ) {
         BulletinBoard bulletinBoard = BulletinBoard.fromRequestDTO(bulletinBoardRequestDTO);
 
-        String hashedPassword = passwordEncoder.encode(bulletinBoard.getPassword());
-        bulletinBoard.setPassword(hashedPassword);
-
+        bulletinBoard.hashPassword(passwordEncoder);
         bulletinBoard.setCreatedAt(new Date());
         bulletinBoard.setDeletedAt(null);
 
@@ -50,7 +47,7 @@ public class BulletinBoardService {
 
         BulletinBoard newBulletinBoard = bulletinBoard.get();
 
-        if(!passwordEncoder.matches(bulletinBoardRequestDTO.getPassword(), newBulletinBoard.getPassword())) {
+        if(!newBulletinBoard.matchPassword(bulletinBoardRequestDTO.getPassword(), passwordEncoder)) {
             throw new Exception("Password does not match");
         }
 
@@ -76,10 +73,11 @@ public class BulletinBoardService {
 
         BulletinBoard existingBulletinBoard = bulletinBoard.get();
 
-        if(!passwordEncoder.matches(password, existingBulletinBoard.getPassword())) {
+        if(!existingBulletinBoard.matchPassword(password, passwordEncoder)) {
             throw new Exception("Password does not match");
         }
 
-        bulletinBoardRepository.deleteById(bulletinBoardID);
+        existingBulletinBoard.setDeletedAt(new Date());
+        bulletinBoardRepository.save(existingBulletinBoard);
     }
 }
