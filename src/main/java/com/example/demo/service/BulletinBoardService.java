@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BulletinBoardService {
@@ -14,6 +15,10 @@ public class BulletinBoardService {
 
     public List<BulletinBoard> getAllBulletinBoard(){
         return bulletinBoardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+    }
+
+    public Optional<BulletinBoard> getBulletinBoard(Long id){
+        return bulletinBoardRepository.findById(id);
     }
 
     public BulletinBoard postBulletinBoard(BulletinBoard bulletinBoard) {

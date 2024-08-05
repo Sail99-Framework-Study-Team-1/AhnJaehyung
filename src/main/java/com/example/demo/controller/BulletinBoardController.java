@@ -8,13 +8,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController()
 @RequestMapping("/bulletinBoard")
@@ -28,8 +26,18 @@ public class BulletinBoardController {
         return new ResponseEntity<>(bulletinBoards.stream().map(BulletinBoard::toResponseDTO).toList(), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{bulletinBoardID}", method = RequestMethod.GET)
+    public ResponseEntity<BulletinBoardResponseDTO> readBulletinBoard(
+            @PathVariable Long bulletinBoardID
+    ) {
+        Optional<BulletinBoard> bulletinBoards = bulletinBoardService.getBulletinBoard(bulletinBoardID);
+        return new ResponseEntity<>(bulletinBoards.get().toResponseDTO(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<BulletinBoardResponseDTO> createBulletinBoard(@Valid @RequestBody BulletinBoardRequestDTO bulletinBoardRequestDTO) {
+    public ResponseEntity<BulletinBoardResponseDTO> createBulletinBoard(
+            @Valid @RequestBody BulletinBoardRequestDTO bulletinBoardRequestDTO
+    ) {
         BulletinBoard bulletinBoard = BulletinBoard.fromRequestDTO(bulletinBoardRequestDTO);
         bulletinBoard.setCreatedAt(new Date());
         bulletinBoard.setDeletedAt(null);
