@@ -38,6 +38,8 @@ public class BulletinBoard {
     @Column(nullable = true)
     private Date deletedAt;
 
+
+
     public static BulletinBoard fromRequestDTO(BulletinBoardRequestDTO dto) {
         BulletinBoard bulletinBoard = new BulletinBoard();
         bulletinBoard.setTitle(dto.getTitle());
