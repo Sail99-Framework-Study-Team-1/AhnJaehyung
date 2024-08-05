@@ -5,6 +5,7 @@ import com.example.demo.repository.BulletinBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +17,6 @@ import java.util.Optional;
 public class BulletinBoardService {
     @Autowired BulletinBoardRepository bulletinBoardRepository;
 
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     public List<BulletinBoard> getAllBulletinBoard(){
         return bulletinBoardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     }
@@ -27,9 +26,6 @@ public class BulletinBoardService {
     }
 
     public BulletinBoard postBulletinBoard(BulletinBoard bulletinBoard) {
-        String password = bulletinBoard.getPassword();
-        String hashedPassword = passwordEncoder.encode(password);
-        bulletinBoard.setPassword(hashedPassword);
         return bulletinBoardRepository.save(bulletinBoard);
     }
 }
