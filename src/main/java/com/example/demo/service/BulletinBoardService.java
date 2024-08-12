@@ -39,22 +39,17 @@ public class BulletinBoardService {
             Long bulletinBoardID,
             BulletinBoardRequestDTO bulletinBoardRequestDTO
     ) throws Exception {
-        Optional<BulletinBoard> bulletinBoard = bulletinBoardRepository.findById(bulletinBoardID);
+        BulletinBoard bulletinBoard = bulletinBoardRepository
+                .findById(bulletinBoardID)
+                .orElseThrow(() -> new Exception("No bulletinboard exists"));
 
-        if(bulletinBoard.isEmpty()) {
-            throw new Exception("No bulletinboard exists");
-        }
-
-        BulletinBoard newBulletinBoard = bulletinBoard.get();
-
-        if(!newBulletinBoard.matchPassword(bulletinBoardRequestDTO.getPassword(), passwordEncoder)) {
+        if(!bulletinBoard.matchPassword(bulletinBoardRequestDTO.getPassword(), passwordEncoder)) {
             throw new Exception("Password does not match");
         }
 
-        newBulletinBoard.setTitle(bulletinBoardRequestDTO.getTitle());
-        newBulletinBoard.setContent(bulletinBoardRequestDTO.getContent());
-
-        return bulletinBoardRepository.save(newBulletinBoard);
+        bulletinBoard.setTitle(bulletinBoardRequestDTO.getTitle());
+        bulletinBoard.setContent(bulletinBoardRequestDTO.getContent());
+        return bulletinBoard;
     }
 
     public Optional<BulletinBoard> getBulletinBoard(Long id){
@@ -65,19 +60,15 @@ public class BulletinBoardService {
             Long bulletinBoardID,
             String password
     ) throws Exception {
-        Optional<BulletinBoard> bulletinBoard = bulletinBoardRepository.findById(bulletinBoardID);
+        BulletinBoard bulletinBoard = bulletinBoardRepository
+                .findById(bulletinBoardID)
+                .orElseThrow(() -> new Exception("No bulletinboard exists"));
 
-        if(bulletinBoard.isEmpty()) {
-            throw new Exception("No bulletinboard exists");
-        }
-
-        BulletinBoard existingBulletinBoard = bulletinBoard.get();
-
-        if(!existingBulletinBoard.matchPassword(password, passwordEncoder)) {
+        if(!bulletinBoard.matchPassword(password, passwordEncoder)) {
             throw new Exception("Password does not match");
         }
 
-        existingBulletinBoard.setDeletedAt(new Date());
-        bulletinBoardRepository.save(existingBulletinBoard);
+        bulletinBoard.setDeletedAt(new Date());
+        bulletinBoardRepository.save(bulletinBoard);
     }
 }
