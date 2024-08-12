@@ -20,21 +20,13 @@ public class BulletinBoardController {
 
     @Autowired private BulletinBoardService bulletinBoardService;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping(value = "")
     public ResponseEntity<List<BulletinBoardResponseDTO>> readAllBulletinBoard() {
         List<BulletinBoard> bulletinBoards = bulletinBoardService.getAllBulletinBoard();
         return new ResponseEntity<>(bulletinBoards.stream().map(BulletinBoard::toResponseDTO).toList(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{bulletinBoardID}", method = RequestMethod.GET)
-    public ResponseEntity<BulletinBoardResponseDTO> readBulletinBoard(
-            @PathVariable Long bulletinBoardID
-    ) {
-        Optional<BulletinBoard> bulletinBoards = bulletinBoardService.getBulletinBoard(bulletinBoardID);
-        return new ResponseEntity<>(bulletinBoards.get().toResponseDTO(), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @PostMapping(value = "")
     public ResponseEntity<BulletinBoardResponseDTO> createBulletinBoard(
             @Valid @RequestBody BulletinBoardRequestDTO bulletinBoardRequestDTO
     ) {
@@ -46,7 +38,15 @@ public class BulletinBoardController {
         );
     }
 
-    @RequestMapping(value = "/{bulletinBoardID}", method = RequestMethod.PUT)
+    @GetMapping(value = "/{bulletinBoardID}")
+    public ResponseEntity<BulletinBoardResponseDTO> readBulletinBoard(
+            @PathVariable Long bulletinBoardID
+    ) {
+        Optional<BulletinBoard> bulletinBoards = bulletinBoardService.getBulletinBoard(bulletinBoardID);
+        return new ResponseEntity<>(bulletinBoards.get().toResponseDTO(), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/{bulletinBoardID}")
     public ResponseEntity<BulletinBoardResponseDTO> updateBulletinBoard(
             @PathVariable Long bulletinBoardID,
             @Valid @RequestBody BulletinBoardRequestDTO bulletinBoardRequestDTO
@@ -59,7 +59,7 @@ public class BulletinBoardController {
         );
     }
 
-    @RequestMapping(value = "/{bulletinBoardID}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{bulletinBoardID}")
     public ResponseEntity<Object> deleteBulletinBoard(
             @PathVariable Long bulletinBoardID,
             @RequestBody PasswordDTO passwordDTO

@@ -39,21 +39,21 @@ public class BulletinBoard {
     @Column(nullable = true)
     private Date deletedAt;
 
+    public BulletinBoard() {}
+
+    public BulletinBoard(BulletinBoardRequestDTO dto) {
+        this.setTitle(dto.getTitle());
+        this.setContent(dto.getContent());
+        this.setAuthor(dto.getAuthor());
+        this.setPassword(dto.getPassword());
+    }
+
     public void hashPassword(PasswordEncoder encoder) {
         this.password = encoder.encode(this.password);
     }
 
-    public boolean matchPassword(String password, PasswordEncoder encoder) {
-        return encoder.matches(password, this.password);
-    }
-
-    public static BulletinBoard fromRequestDTO(BulletinBoardRequestDTO dto) {
-        BulletinBoard bulletinBoard = new BulletinBoard();
-        bulletinBoard.setTitle(dto.getTitle());
-        bulletinBoard.setContent(dto.getContent());
-        bulletinBoard.setAuthor(dto.getAuthor());
-        bulletinBoard.setPassword(dto.getPassword());
-        return bulletinBoard;
+    public boolean isWrongPassword(String password, PasswordEncoder encoder) {
+        return !encoder.matches(password, this.password);
     }
 
     public BulletinBoardResponseDTO toResponseDTO() {

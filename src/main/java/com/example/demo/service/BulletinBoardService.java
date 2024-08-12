@@ -4,7 +4,6 @@ import com.example.demo.domain.BulletinBoard;
 import com.example.demo.dto.BulletinBoardRequestDTO;
 import com.example.demo.repository.BulletinBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ public class BulletinBoardService {
     public BulletinBoard postBulletinBoard(
             BulletinBoardRequestDTO bulletinBoardRequestDTO
     ) {
-        BulletinBoard bulletinBoard = BulletinBoard.fromRequestDTO(bulletinBoardRequestDTO);
+        BulletinBoard bulletinBoard = new BulletinBoard(bulletinBoardRequestDTO);
 
         bulletinBoard.hashPassword(passwordEncoder);
         bulletinBoard.setCreatedAt(new Date());
@@ -43,7 +42,7 @@ public class BulletinBoardService {
                 .findById(bulletinBoardID)
                 .orElseThrow(() -> new Exception("No bulletinboard exists"));
 
-        if(!bulletinBoard.matchPassword(bulletinBoardRequestDTO.getPassword(), passwordEncoder)) {
+        if(bulletinBoard.isWrongPassword(bulletinBoardRequestDTO.getPassword(), passwordEncoder)) {
             throw new Exception("Password does not match");
         }
 
@@ -64,7 +63,7 @@ public class BulletinBoardService {
                 .findById(bulletinBoardID)
                 .orElseThrow(() -> new Exception("No bulletinboard exists"));
 
-        if(!bulletinBoard.matchPassword(password, passwordEncoder)) {
+        if(bulletinBoard.isWrongPassword(password, passwordEncoder)) {
             throw new Exception("Password does not match");
         }
 
