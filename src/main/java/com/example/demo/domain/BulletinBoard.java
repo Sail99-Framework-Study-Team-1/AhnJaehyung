@@ -8,7 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 
@@ -52,8 +54,10 @@ public class BulletinBoard {
         this.password = encoder.encode(this.password);
     }
 
-    public boolean isWrongPassword(String password, PasswordEncoder encoder) {
-        return !encoder.matches(password, this.password);
+    public void verifyPasswordOrElseThrow(String password, PasswordEncoder encoder) throws ResponseStatusException {
+        if(!encoder.matches(password, this.password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
+        }
     }
 
     public BulletinBoardResponseDTO toResponseDTO() {

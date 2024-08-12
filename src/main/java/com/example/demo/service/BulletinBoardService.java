@@ -4,9 +4,11 @@ import com.example.demo.domain.BulletinBoard;
 import com.example.demo.dto.BulletinBoardRequestDTO;
 import com.example.demo.repository.BulletinBoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
@@ -34,40 +36,36 @@ public class BulletinBoardService {
         return bulletinBoardRepository.save(bulletinBoard);
     }
 
+    public Optional<BulletinBoard> getBulletinBoard(Long id){
+        return bulletinBoardRepository.findById(id);
+    }
+
     public BulletinBoard putBulletinBoard(
             Long bulletinBoardID,
             BulletinBoardRequestDTO bulletinBoardRequestDTO
-    ) throws Exception {
+    ) throws ResponseStatusException {
         BulletinBoard bulletinBoard = bulletinBoardRepository
                 .findById(bulletinBoardID)
-                .orElseThrow(() -> new Exception("No bulletinboard exists"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if(bulletinBoard.isWrongPassword(bulletinBoardRequestDTO.getPassword(), passwordEncoder)) {
-            throw new Exception("Password does not match");
-        }
+        bulletinBoard.verifyPasswordOrElseThrow(bulletinBoardRequestDTO.getPassword(), passwordEncoder);
 
         bulletinBoard.setTitle(bulletinBoardRequestDTO.getTitle());
         bulletinBoard.setContent(bulletinBoardRequestDTO.getContent());
-        return bulletinBoard;
-    }
 
-    public Optional<BulletinBoard> getBulletinBoard(Long id){
-        return bulletinBoardRepository.findById(id);
+        return bulletinBoard;
     }
 
     public void deleteBulletinBoard(
             Long bulletinBoardID,
             String password
-    ) throws Exception {
+    ) throws ResponseStatusException {
         BulletinBoard bulletinBoard = bulletinBoardRepository
                 .findById(bulletinBoardID)
-                .orElseThrow(() -> new Exception("No bulletinboard exists"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if(bulletinBoard.isWrongPassword(password, passwordEncoder)) {
-            throw new Exception("Password does not match");
-        }
+        bulletinBoard.verifyPasswordOrElseThrow(password, passwordEncoder);
 
         bulletinBoard.setDeletedAt(new Date());
-        bulletinBoardRepository.save(bulletinBoard);
     }
 }
