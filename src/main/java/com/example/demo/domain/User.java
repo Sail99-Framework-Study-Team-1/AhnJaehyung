@@ -1,5 +1,6 @@
 package com.example.demo.domain;
 
+import com.example.demo.dto.UserRequestDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import lombok.Setter;
 public class User {
 
     @Id
+    @GeneratedValue
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -19,4 +21,11 @@ public class User {
     private String username;
 
     private String password;
+
+    public User() {}
+
+    public User(UserRequestDTO userRequestDTO) {
+        this.username = userRequestDTO.getUsername();
+        this.password = userRequestDTO.getPassword();
+    }
 }

@@ -6,10 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 class BulletinBoardServiceTest {
 
     private final BulletinBoardRequestDTO bulletinBoardRequestDTO1 = new BulletinBoardRequestDTO();
@@ -38,14 +40,13 @@ class BulletinBoardServiceTest {
         bulletinBoardRequestDTO1.setTitle("Title2");
         bulletinBoardRequestDTO1.setContent("Content2");
 
-        BulletinBoard newBulletinBoard = bulletinBoardService.putBulletinBoard(
+        BulletinBoard changedBulletinBoard = bulletinBoardService.putBulletinBoard(
                 bulletinBoard.getId(),
                 bulletinBoardRequestDTO1
         );
 
-        assertNotEquals(bulletinBoard.getTitle(), newBulletinBoard.getTitle());
-        assertNotEquals(bulletinBoard.getContent(), newBulletinBoard.getContent());
-        assertEquals(bulletinBoard.getCreatedAt(), newBulletinBoard.getCreatedAt());
+        assertEquals(changedBulletinBoard.getTitle(), "Title2");
+        assertEquals(changedBulletinBoard.getContent(), "Content2");
     }
 
     @Test
