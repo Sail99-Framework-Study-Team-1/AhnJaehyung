@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.jwt.JWTUtil;
 import com.example.demo.jwt.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +18,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class Config {
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
 
-    public Config(AuthenticationConfiguration authenticationConfiguration) {
+    public Config(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
         this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -48,7 +51,10 @@ public class Config {
         http.sessionManagement(auth -> auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterAt(
-                new LoginFilter(authenticationManager(authenticationConfiguration)),
+                new LoginFilter(
+                        authenticationManager(authenticationConfiguration),
+                        jwtUtil
+                ),
                 UsernamePasswordAuthenticationFilter.class
         );
 
