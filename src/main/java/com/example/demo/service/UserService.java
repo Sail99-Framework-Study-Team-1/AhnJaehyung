@@ -30,15 +30,15 @@ public class UserService implements UserDetailsService {
         Matcher passwordMatcher = passwordPattern.matcher(userRequestDTO.getPassword());
 
         if (!usernameMatcher.matches()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username은 최소 4자 이상, 10자 이하이며 알파벳 소문자(a~z), 숫자(0~9)로 구성되어야 한다.");
         }
 
         if (!passwordMatcher.matches()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid password");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "password는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9)로 구성되어야 한다.");
         }
 
         if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Same username already exists");
         }
 
         User user = new User(userRequestDTO).hashPassword(passwordEncoder);
