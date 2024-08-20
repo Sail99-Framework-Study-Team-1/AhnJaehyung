@@ -1,10 +1,14 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.BulletinBoard;
+import com.example.demo.domain.User;
 import com.example.demo.dto.BulletinBoardRequestDTO;
 import com.example.demo.repository.BulletinBoardRepository;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,19 +21,24 @@ import java.util.Optional;
 @Service
 @Transactional
 public class BulletinBoardService {
+    @Autowired UserRepository userRepository;
     @Autowired BulletinBoardRepository bulletinBoardRepository;
     @Autowired private PasswordEncoder passwordEncoder;
 
     public List<BulletinBoard> getAllBulletinBoard(){
-        return bulletinBoardRepository.findAllNotDeleted();
+        return bulletinBoardRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc();
     }
 
     public BulletinBoard postBulletinBoard(
             BulletinBoardRequestDTO bulletinBoardRequestDTO
     ) {
-        BulletinBoard bulletinBoard = new BulletinBoard(bulletinBoardRequestDTO);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        );
 
-        bulletinBoard.hashPassword(passwordEncoder);
+        BulletinBoard bulletinBoard = new BulletinBoard(bulletinBoardRequestDTO);
+        bulletinBoard.setAuthor(user);
         bulletinBoard.setCreatedAt(new Date());
         bulletinBoard.setDeletedAt(null);
 
@@ -48,8 +57,6 @@ public class BulletinBoardService {
                 .findById(bulletinBoardID)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        bulletinBoard.verifyPasswordOrElseThrow(bulletinBoardRequestDTO.getPassword(), passwordEncoder);
-
         bulletinBoard.setTitle(bulletinBoardRequestDTO.getTitle());
         bulletinBoard.setContent(bulletinBoardRequestDTO.getContent());
 
@@ -63,8 +70,6 @@ public class BulletinBoardService {
         BulletinBoard bulletinBoard = bulletinBoardRepository
                 .findById(bulletinBoardID)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        bulletinBoard.verifyPasswordOrElseThrow(password, passwordEncoder);
 
         bulletinBoard.setDeletedAt(new Date());
     }

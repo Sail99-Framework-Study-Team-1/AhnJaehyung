@@ -12,9 +12,4 @@ public class BulletinBoardRequestDTO {
 
     @NotBlank
     private String content;
-
-    private String author;
-
-    @NotBlank
-    private String password;
 }

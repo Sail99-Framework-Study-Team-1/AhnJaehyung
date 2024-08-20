@@ -1,6 +1,7 @@
 package com.example.demo.domain;
 
 import com.example.demo.dto.UserRequestDTO;
+import com.example.demo.dto.UserResponseDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,5 +53,11 @@ public class User implements UserDetails {
         });
 
         return authorities;
+    }
+
+    UserResponseDTO toUserResponseDTO() {
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUsername(this.username);
+        return userResponseDTO;
     }
 }

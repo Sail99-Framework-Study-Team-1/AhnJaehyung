@@ -2,10 +2,7 @@ package com.example.demo.domain;
 
 import com.example.demo.dto.BulletinBoardRequestDTO;
 import com.example.demo.dto.BulletinBoardResponseDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -29,11 +26,9 @@ public class BulletinBoard {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String author;
-
-    @Column(nullable = false)
-    private String password;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author", nullable = false)
+    private User author;
 
     @Column(nullable = false)
     private Date createdAt;
@@ -46,18 +41,6 @@ public class BulletinBoard {
     public BulletinBoard(BulletinBoardRequestDTO dto) {
         this.setTitle(dto.getTitle());
         this.setContent(dto.getContent());
-        this.setAuthor(dto.getAuthor());
-        this.setPassword(dto.getPassword());
-    }
-
-    public void hashPassword(PasswordEncoder encoder) {
-        this.password = encoder.encode(this.password);
-    }
-
-    public void verifyPasswordOrElseThrow(String password, PasswordEncoder encoder) throws ResponseStatusException {
-        if(!encoder.matches(password, this.password)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
-        }
     }
 
     public BulletinBoardResponseDTO toResponseDTO() {
@@ -65,7 +48,7 @@ public class BulletinBoard {
         responseDTO.setId(id);
         responseDTO.setTitle(title);
         responseDTO.setContent(content);
-        responseDTO.setAuthor(author);
+        responseDTO.setAuthor(author.toUserResponseDTO());
         responseDTO.setCreatedAt(createdAt);
         return responseDTO;
     }

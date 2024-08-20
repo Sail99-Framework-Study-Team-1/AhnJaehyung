@@ -1,4 +1,4 @@
-@JWT = eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWF0IjoxNzI0MTMxNjIzLCJleHAiOjE3MjQxMzUyMjN9.VyGuQJl9ghA6YJ6v-PYMoBzKbc2UuMj3RwKq4iq3FAQ
+@JWT = eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWF0IjoxNzI0MTM2NTE3LCJleHAiOjE3MjQxNDAxMTd9.Chzr7yp143U1HydY9GGKOEMHT1F66JhiAeEIhladbcI
 
 ###############################################################
 ###################### Authentication #########################
