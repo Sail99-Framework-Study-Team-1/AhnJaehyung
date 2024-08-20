@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: bulletinboard
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://:/community
+    username: root
+    password:
+
+  jwt:
+    secret:
