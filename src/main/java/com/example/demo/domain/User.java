@@ -20,13 +20,15 @@ import java.util.Collection;
 public class User implements UserDetails {
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false)
+    @Column(nullable = false)
     private Long id;
 
     @Column(unique = true)
     private String username;
-
     private String password;
+
+    @Column(unique = true)
+    private String profileName;
 
     public User() {}
 
@@ -40,24 +42,15 @@ public class User implements UserDetails {
         return this;
     }
 
-    /* UserDetails */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-
-        authorities.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return "ROLE_USER";
-            }
-        });
-
-        return authorities;
+        return new ArrayList<>();
     }
 
     UserResponseDTO toUserResponseDTO() {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUsername(this.username);
+        userResponseDTO.setId(this.id);
+        userResponseDTO.setProfileName(this.profileName);
         return userResponseDTO;
     }
 }

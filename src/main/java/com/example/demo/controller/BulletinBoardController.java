@@ -61,11 +61,10 @@ public class BulletinBoardController {
 
     @DeleteMapping(value = "/{bulletinBoardID}")
     public ResponseEntity<Object> deleteBulletinBoard(
-            @PathVariable Long bulletinBoardID,
-            @RequestBody PasswordDTO passwordDTO
+            @PathVariable Long bulletinBoardID
     ) throws Exception {
         bulletinBoardService
-                .deleteBulletinBoard(bulletinBoardID, passwordDTO.getPassword());
+                .deleteBulletinBoard(bulletinBoardID);
         return new ResponseEntity<>(
                 HttpStatus.OK
         );

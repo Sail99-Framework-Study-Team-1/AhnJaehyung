@@ -5,5 +5,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class UserResponseDTO {
-    String username;
+    Long id;
+    String profileName;
 }

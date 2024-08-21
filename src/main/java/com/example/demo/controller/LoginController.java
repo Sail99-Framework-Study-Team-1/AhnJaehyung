@@ -12,13 +12,6 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
     @Autowired private UserService userService;
 
-    @PostMapping("/signin")
-    public String login(
-            @Valid @RequestBody UserRequestDTO userRequestDTO
-    ) {
-        return "login";
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<String> signup(
             @Valid @RequestBody UserRequestDTO userRequestDTO

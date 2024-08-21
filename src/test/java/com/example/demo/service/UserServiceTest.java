@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,54 +33,66 @@ class UserServiceTest {
     @Test
     void postUser_usernameValidation_tooShort() {
         userRequestDTO.setUsername("un");
-        assertThrows(
+        ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> userService.save(userRequestDTO)
         );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 
     @Test
     void postUser_usernameValidation_tooLong() {
         userRequestDTO.setUsername("23il4jil23j4il23j4li2j3il4j23li4j2il3j4l23j4il");
-        assertThrows(
+        ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> userService.save(userRequestDTO)
         );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 
     @Test
     void postUser_usernameValidation_nonAlphanumericCase() {
         userRequestDTO.setUsername("ajf234SSDE");
-        assertThrows(
+        ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> userService.save(userRequestDTO)
         );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 
     @Test
     void postUser_passwordValidation_tooShort() {
         userRequestDTO.setPassword("shpw");
-        assertThrows(
+        ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> userService.save(userRequestDTO)
         );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 
     @Test
     void postUser_passwordValidation_tooLong() {
         userRequestDTO.setPassword("tooooooOOOOOoLl1ooo000ngpassw0rd");
-        assertThrows(
+        ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> userService.save(userRequestDTO)
         );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 
     @Test
     void postUser_passwordValidation_nonAlphanumeric() {
         userRequestDTO.setPassword("asdflidajsd;lf@@!!!!@#$%");
-        assertThrows(
+        ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> userService.save(userRequestDTO)
         );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 }

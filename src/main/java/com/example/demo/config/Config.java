@@ -44,9 +44,9 @@ public class Config {
         http.formLogin(auth -> auth.disable());
         http.httpBasic(auth -> auth.disable());
 
-        http.authorizeRequests(auth -> auth
+        http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.POST, "/signup", "/signin").permitAll()
-                .requestMatchers(HttpMethod.GET , "/bulletinBoard/**").authenticated()
+                .requestMatchers("/bulletinBoard/**").authenticated()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
         );

@@ -1,12 +1,20 @@
 package com.example.demo.service;
 
+import com.example.demo.DemoApplicationTests;
 import com.example.demo.domain.BulletinBoard;
+import com.example.demo.domain.User;
 import com.example.demo.dto.BulletinBoardRequestDTO;
+import com.example.demo.dto.UserRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,20 +25,18 @@ class BulletinBoardServiceTest {
     private final BulletinBoardRequestDTO bulletinBoardRequestDTO1 = new BulletinBoardRequestDTO();
     private final BulletinBoardRequestDTO bulletinBoardRequestDTO2 = new BulletinBoardRequestDTO();
 
-    @Autowired
-    private BulletinBoardService bulletinBoardService;
+    @Autowired private BulletinBoardService bulletinBoardService;
+    @Autowired private UserService userService;
 
     @BeforeEach
     void setUp() {
+        DemoApplicationTests.loginTestUser(userService, 1);
+
         this.bulletinBoardRequestDTO1.setTitle("Title1");
         this.bulletinBoardRequestDTO1.setContent("Content1");
-        this.bulletinBoardRequestDTO1.setAuthor("me1");
-        this.bulletinBoardRequestDTO1.setPassword("pw1");
 
         this.bulletinBoardRequestDTO2.setTitle("Title2");
         this.bulletinBoardRequestDTO2.setContent("Content2");
-        this.bulletinBoardRequestDTO2.setAuthor("me2");
-        this.bulletinBoardRequestDTO2.setPassword("pw2");
     }
 
     @Test
@@ -53,13 +59,15 @@ class BulletinBoardServiceTest {
     void putBulletinBoardWithWrongPassword() {
         BulletinBoard bulletinBoard = bulletinBoardService.postBulletinBoard(bulletinBoardRequestDTO1);
 
-        assertThrows(
-                Exception.class,
+        DemoApplicationTests.loginTestUser(userService, 2);
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> bulletinBoardService.putBulletinBoard(
                         bulletinBoard.getId(),
                         bulletinBoardRequestDTO2
                 )
         );
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     }
 
     @Test
@@ -68,17 +76,16 @@ class BulletinBoardServiceTest {
 
         assertDoesNotThrow(
                 () -> bulletinBoardService.deleteBulletinBoard(
-                        bulletinBoard.getId(),
-                        bulletinBoardRequestDTO1.getPassword()
+                        bulletinBoard.getId()
                 )
         );
 
-        assertThrows(
-                Exception.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> bulletinBoardService.deleteBulletinBoard(
-                        bulletinBoard.getId(),
-                        bulletinBoardRequestDTO2.getPassword()
+                        bulletinBoard.getId()
                 )
         );
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
     }
 }

@@ -16,13 +16,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class BulletinBoardService {
-    @Autowired UserRepository userRepository;
-    @Autowired BulletinBoardRepository bulletinBoardRepository;
+    @Autowired private UserService userService;
+    @Autowired private UserRepository userRepository;
+    @Autowired private BulletinBoardRepository bulletinBoardRepository;
     @Autowired private PasswordEncoder passwordEncoder;
 
     public List<BulletinBoard> getAllBulletinBoard(){
@@ -32,10 +34,7 @@ public class BulletinBoardService {
     public BulletinBoard postBulletinBoard(
             BulletinBoardRequestDTO bulletinBoardRequestDTO
     ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)
-        );
+        User user = userService.getAuthenticatedUserElseThrow();
 
         BulletinBoard bulletinBoard = new BulletinBoard(bulletinBoardRequestDTO);
         bulletinBoard.setAuthor(user);
@@ -45,7 +44,9 @@ public class BulletinBoardService {
         return bulletinBoardRepository.save(bulletinBoard);
     }
 
-    public Optional<BulletinBoard> getBulletinBoard(Long id){
+    public Optional<BulletinBoard> getBulletinBoard(
+            Long id
+    ){
         return bulletinBoardRepository.findById(id);
     }
 
@@ -57,6 +58,9 @@ public class BulletinBoardService {
                 .findById(bulletinBoardID)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        validateNotDeletedBulletinBoardElseThrow(bulletinBoard);
+        validateAuthorOrElseThrow(bulletinBoard);
+
         bulletinBoard.setTitle(bulletinBoardRequestDTO.getTitle());
         bulletinBoard.setContent(bulletinBoardRequestDTO.getContent());
 
@@ -64,13 +68,33 @@ public class BulletinBoardService {
     }
 
     public void deleteBulletinBoard(
-            Long bulletinBoardID,
-            String password
+            Long bulletinBoardID
     ) throws ResponseStatusException {
         BulletinBoard bulletinBoard = bulletinBoardRepository
                 .findById(bulletinBoardID)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        validateNotDeletedBulletinBoardElseThrow(bulletinBoard);
+        validateAuthorOrElseThrow(bulletinBoard);
+
         bulletinBoard.setDeletedAt(new Date());
+    }
+
+    private void validateNotDeletedBulletinBoardElseThrow(
+            BulletinBoard bulletinBoard
+    ) throws ResponseStatusException {
+        if (bulletinBoard.getDeletedAt() != null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private void validateAuthorOrElseThrow(
+            BulletinBoard bulletinBoard
+    ) throws ResponseStatusException {
+        User userOnSession = userService.getAuthenticatedUserElseThrow();
+
+        if (!Objects.equals(userOnSession.getId(), bulletinBoard.getAuthor().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 }

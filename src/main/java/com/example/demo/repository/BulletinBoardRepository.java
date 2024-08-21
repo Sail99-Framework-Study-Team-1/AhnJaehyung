@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface BulletinBoardRepository extends JpaRepository<BulletinBoard, Long> {
     List<BulletinBoard> findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+    BulletinBoard findByIdAndDeletedAtNotNull(Long id);
 }
