@@ -2,17 +2,12 @@ package com.example.demo.service;
 
 import com.example.demo.DemoApplicationTests;
 import com.example.demo.domain.BulletinBoard;
-import com.example.demo.domain.User;
 import com.example.demo.dto.BulletinBoardRequestDTO;
-import com.example.demo.dto.UserRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
