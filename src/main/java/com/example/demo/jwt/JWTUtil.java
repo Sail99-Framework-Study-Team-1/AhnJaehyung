@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class JWTUtil {
 
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
 
     public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
         byte[] key = secret.getBytes(StandardCharsets.UTF_8);
@@ -21,12 +21,12 @@ public class JWTUtil {
         this.secretKey = new SecretKeySpec(key, algorithm);
     }
 
-    public String getUsername(String token) {
+    public Long getUserId(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey).build()
                 .parseSignedClaims(token)
                 .getPayload()
-                .get("username", String.class);
+                .get("id", Long.class);
     }
 
     public Boolean isExpired(String token) {
@@ -40,7 +40,7 @@ public class JWTUtil {
     public String createToken(User user, long expiredMs) {
         long currentTime = System.currentTimeMillis();
         return Jwts.builder()
-                .claim("username", user.getUsername())
+                .claim("id", user.getId())
                 .issuedAt(new Date(currentTime))
                 .expiration(new Date(currentTime + expiredMs))
                 .signWith(secretKey)

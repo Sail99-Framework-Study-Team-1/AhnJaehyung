@@ -1,6 +1,6 @@
 package com.example.demo.jwt;
 
-import com.example.demo.domain.User;
+import com.example.demo.domain.UserAuthenticationToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,22 +33,22 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authorization.split(" ")[1];
+        authorization = authorization.split(" ")[1];
 
-        if (jwtUtil.isExpired(token)) {
+        if (jwtUtil.isExpired(authorization)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String username = jwtUtil.getUsername(token);
+        Long userId = jwtUtil.getUserId(authorization);
 
-        User user = new User();
-        user.setUsername(username);
+        UserAuthenticationToken token = new UserAuthenticationToken();
+        token.setUserId(userId);
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(
-                user,
+                token,
                 null,
-                user.getAuthorities()
+                token.getAuthorities()
         );
 
         SecurityContextHolder.getContext().setAuthentication(authToken);

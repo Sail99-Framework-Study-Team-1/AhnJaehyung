@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.domain.User;
+import com.example.demo.domain.UserAuthenticationToken;
 import com.example.demo.dto.UserRequestDTO;
 import com.example.demo.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -19,9 +19,9 @@ public class DemoApplicationTests {
 	public static void loginTestUser(UserService userService, int num) {
 		UserRequestDTO userRequestDTO = new UserRequestDTO();
 		userRequestDTO.setUsername("username" + num);
-		userRequestDTO.setProfileName(userRequestDTO.getUsername());
+		userRequestDTO.setProfileName(userRequestDTO.getUsername() + "name");
 		userRequestDTO.setPassword("password");
-		User user = userService.save(userRequestDTO);
+		UserAuthenticationToken user = new UserAuthenticationToken(userService.save(userRequestDTO));
 
 		Authentication authToken = new UsernamePasswordAuthenticationToken(
 				user,

@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.User;
+import com.example.demo.domain.UserValidatableEntity;
 import com.example.demo.dto.UserRequestDTO;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,13 +54,29 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getAuthenticatedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByUsername(auth.getName());
+    public void throwInvalidUserAccess(
+            UserValidatableEntity entity
+    ) throws ResponseStatusException {
+        Long currentSecurityContextUserId = getAuthenticatedUserIdElseThrow();;
+        if (!Objects.equals(
+                currentSecurityContextUserId,
+                entity.accessibleUserId()
+        )) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
-    public User getAuthenticatedUserElseThrow() throws ResponseStatusException {
-        return getAuthenticatedUser().orElseThrow(
+    public Optional<Long> getUserIdFromCurrentSecurityContext() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            return Optional.of(Long.parseLong(auth.getName()));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public Long getAuthenticatedUserIdElseThrow() throws ResponseStatusException {
+        return getUserIdFromCurrentSecurityContext().orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)
         );
     }

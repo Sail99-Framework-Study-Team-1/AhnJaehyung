@@ -51,10 +51,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     ) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> authoritiesIterator = authorities.iterator();
-        GrantedAuthority authority = authoritiesIterator.next();
-
         String token = jwtUtil.createToken(user, 60 * 60 * 1000L);
 
         response.addHeader("Authorization", "Bearer " + token);

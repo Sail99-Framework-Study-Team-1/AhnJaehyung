@@ -5,15 +5,12 @@ import com.example.demo.dto.BulletinBoardResponseDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 
 @Entity
 @Getter @Setter
-public class BulletinBoard {
+public class BulletinBoard implements UserValidatableEntity {
 
     @Id
     @GeneratedValue()
@@ -51,5 +48,10 @@ public class BulletinBoard {
         responseDTO.setAuthor(author.toUserResponseDTO());
         responseDTO.setCreatedAt(createdAt);
         return responseDTO;
+    }
+
+    @Override
+    public Long accessibleUserId() {
+        return author.getId();
     }
 }
