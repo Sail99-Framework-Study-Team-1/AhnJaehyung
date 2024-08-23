@@ -31,4 +31,7 @@ public class DemoApplicationTests {
 		SecurityContextHolder.getContext().setAuthentication(authToken);
 	}
 
+	public static void logoutTestUser() {
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
 }

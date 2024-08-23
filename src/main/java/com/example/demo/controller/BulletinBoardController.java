@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.domain.BulletinBoard;
 import com.example.demo.dto.BulletinBoardRequestDTO;
 import com.example.demo.dto.BulletinBoardResponseDTO;
-import com.example.demo.dto.PasswordDTO;
 import com.example.demo.service.BulletinBoardService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

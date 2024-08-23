@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class BulletinBoardRequestDTO {
-    @NotBlank
-    private String title;
-
+public class ReplyRequestDTO {
     @NotBlank
     private String content;
 }
